@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fitness Tracker — Creador de rutinas</title>
+  <meta name="description" content="Crea rutinas para Fitness Tracker y expórtalas como CSV para importarlas en la app. También puedes importar desde PDF, imágenes o pegar el texto.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23000'/%3E%3Ctext x='50' y='68' font-size='48' font-family='Arial' font-weight='bold' fill='%23fff' text-anchor='middle'%3EFT%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@200..400,0..1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Geist", "-apple-system", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#fafaf9] font-sans text-[#52525b] text-sm antialiased selection:bg-[#18181b] selection:text-white">
+
+  <header class="fixed top-0 w-full z-50 bg-[#fafaf9]/90 backdrop-blur-md border-b border-[#e4e4e7]">
+    <div class="max-w-6xl mx-auto h-16 px-6 sm:px-10 flex items-center justify-between">
+      <div class="flex items-center gap-6 min-w-0">
+        <span class="font-mono text-xs tracking-[0.2em] uppercase text-[#18181b] font-medium whitespace-nowrap" data-i18n="brand">FITNESS TRACKER</span>
+        <span class="hidden sm:inline-block w-px h-3 bg-[#e4e4e7]"></span>
+        <span class="hidden sm:inline-block font-sans text-xs tracking-wider text-[#71717a] uppercase truncate" data-i18n="routinePageTitle">RUTINA DE ENTRENAMIENTO</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2 font-mono text-[11px] tracking-wider text-[#71717a]">
+          <button type="button" id="langEs" class="seg transition-colors" aria-label="Español">ES</button>
+          <span>/</span>
+          <button type="button" id="langEn" class="seg transition-colors" aria-label="English">EN</button>
+        </div>
+        <div class="w-px h-3 bg-[#e4e4e7]"></div>
+        <div class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" aria-hidden="true"></span>
+          <span id="autosaveStatus" class="font-mono text-[10px] tracking-widest text-[#71717a] uppercase hidden sm:inline-block" data-i18n="localSave">GUARDADO LOCAL</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-28 pb-32 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 sm:px-10 flex flex-col gap-24">
+
+      <!-- ===== Programa actual ===== -->
+      <section class="flex flex-col gap-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-[#e4e4e7]">
+          <div>
+            <span class="font-mono text-[11px] text-[#71717a] tracking-widest uppercase block mb-1" data-i18n="programCurrent">Programa Actual</span>
+            <div class="relative inline-flex items-center group max-w-full">
+              <select id="routineSelect" class="appearance-none bg-transparent text-[#18181b] font-sans text-2xl sm:text-3xl font-light tracking-tight pr-8 py-0 border-0 focus:ring-0 focus:outline-none cursor-pointer max-w-full"></select>
+              <span class="material-symbols-outlined text-[18px] text-[#71717a] absolute right-0 pointer-events-none group-hover:text-[#18181b] transition-colors" aria-hidden="true">unfold_more</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button type="button" id="newRoutineBtn" class="px-3.5 py-1.5 text-xs font-mono text-[#18181b] border border-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors rounded-none" data-i18n-title="newRoutine">
+              <span data-i18n="newRoutineShort">+ NUEVA</span>
+            </button>
+            <button type="button" id="dupRoutineBtn" class="px-3.5 py-1.5 text-xs font-mono text-[#71717a] hover:text-[#18181b] transition-colors rounded-none" data-i18n-title="duplicate">
+              <span data-i18n="duplicate">DUPLICAR</span>
+            </button>
+            <button type="button" id="delRoutineBtn" class="px-3.5 py-1.5 text-xs font-mono text-[#71717a] hover:text-red-600 transition-colors rounded-none" data-i18n-title="delete">
+              <span data-i18n="delete">ELIMINAR</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pt-2">
+          <div class="md:col-span-5 flex flex-col gap-2">
+            <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="routineName" data-i18n="routineName">Nombre de rutina</label>
+            <input id="routineName" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] text-sm py-1.5 px-0 placeholder-[#a1a1aa] focus:outline-none transition-colors w-full rounded-none" type="text" maxlength="80" autocomplete="off" data-i18n-ph="routineNamePh">
+          </div>
+          <div class="md:col-span-7 flex flex-col gap-2">
+            <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="routineDesc" data-i18n="focusNotes">Enfoque / Notas</label>
+            <input id="routineDesc" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#52525b] text-sm py-1.5 px-0 placeholder-[#a1a1aa] focus:outline-none transition-colors w-full rounded-none" type="text" maxlength="300" data-i18n-ph="descriptionPh">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pt-4">
+          <div class="md:col-span-6 flex flex-col gap-3">
+            <span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" data-i18n="rotationMode">Modo de Rotación</span>
+            <div id="scheduleChips" class="flex flex-wrap items-center gap-6 font-mono text-xs" role="group" aria-label="Modo de rotación"></div>
+          </div>
+          <div class="md:col-span-6 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" data-i18n="activeDaysTitle">Días Activos</span>
+              <span id="activeDaysCount" class="font-mono text-[10px] text-[#71717a] uppercase"></span>
+            </div>
+            <div id="scheduledDaysChips" class="flex items-center gap-1.5 font-mono text-xs" role="group" aria-label="Días activos"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Sesiones programadas ===== -->
+      <section class="flex flex-col gap-16">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-[#e4e4e7] pb-4 gap-2 sm:gap-4">
+          <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 min-w-0">
+            <h2 class="text-xl text-[#18181b] font-medium tracking-tight whitespace-nowrap" data-i18n="sessionsTitle">Sesiones Programadas</h2>
+            <span id="dayCount" class="font-mono text-xs text-[#71717a]"></span>
+          </div>
+          <button type="button" id="addDayBtn" class="hidden self-start sm:self-auto font-mono text-xs text-[#71717a] hover:text-[#18181b] transition-colors whitespace-nowrap">
+            <span aria-hidden="true">+</span>
+            <span data-i18n="addDay">AÑADIR DÍA</span>
+          </button>
+        </div>
+        <div id="daysContainer" class="flex flex-col gap-16"></div>
+      </section>
+
+      <!-- ===== Volumen semanal / radar ===== -->
+      <section class="flex flex-col gap-8">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-[#e4e4e7] pb-4 gap-2 sm:gap-4">
+          <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 min-w-0">
+            <h2 class="text-xl text-[#18181b] font-medium tracking-tight whitespace-nowrap" data-i18n="weeklyTitleShort">Volumen Semanal</h2>
+            <span class="font-mono text-xs text-[#71717a]" data-i18n="weeklySubtitle">Distribución de series</span>
+          </div>
+          <div id="weeklyTotal" class="font-mono text-xs text-[#18181b] font-medium whitespace-nowrap"></div>
+        </div>
+        <div id="weeklyPanel"></div>
+      </section>
+
+      <!-- ===== Importar / Exportar ===== -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-4">
+        <div class="flex flex-col gap-6">
+          <div class="border-b border-[#e4e4e7] pb-3">
+            <h3 class="text-sm font-mono uppercase tracking-widest text-[#18181b] font-medium" data-i18n="importTitleShort">Importar</h3>
+            <p class="text-xs text-[#71717a] mt-1" data-i18n="importSubtitle">Cargar PDF, imagen o CSV existente.</p>
+          </div>
+          <div id="dropzone" class="relative border border-dashed border-[#d4d4d8] hover:border-[#18181b] bg-white p-8 text-center transition-colors group cursor-pointer" aria-describedby="importHint">
+            <input type="file" id="fileInput" accept=".pdf,application/pdf,.csv,.json,.txt,.md,image/*" hidden>
+            <div class="flex flex-col items-center gap-2">
+              <span class="font-mono text-xs text-[#52525b] group-hover:text-[#18181b] transition-colors font-medium" data-i18n="dropzoneTitle">Seleccionar o arrastrar archivo</span>
+              <span class="font-mono text-[10px] text-[#71717a] uppercase" data-i18n="dropzoneFormats">PDF, JPG, PNG, CSV</span>
+            </div>
+            <button type="button" id="chooseFileBtn" class="sr-only" data-i18n="selectFile">ELEGIR ARCHIVO</button>
+          </div>
+          <div id="fileStatus" class="hidden flex items-center gap-3 font-mono text-xs text-[#71717a]" role="status" aria-live="polite"></div>
+          <div id="ocrProgress" class="hidden w-full flex flex-col gap-1">
+            <div class="w-full bg-[#e4e4e7] h-[2px]">
+              <div id="ocrBar" class="bg-[#18181b] h-full w-0 transition-all" style="width:0%"></div>
+            </div>
+            <span id="ocrPercent" class="sr-only">0%</span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <textarea id="rawText" class="bg-white border border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-xs p-3 placeholder-[#a1a1aa] focus:outline-none resize-none rounded-none" rows="3" data-i18n-ph="pastePlaceholder"></textarea>
+            <span id="importHint" class="sr-only" data-i18n="importHint"></span>
+            <button type="button" id="detectBtn" class="self-start font-mono text-xs text-[#71717a] hover:text-[#18181b] transition-colors" data-i18n="analyzeText">Analizar texto →</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div class="border-b border-[#e4e4e7] pb-3">
+            <h3 class="text-sm font-mono uppercase tracking-widest text-[#18181b] font-medium" data-i18n="exportTitleShort">Exportar</h3>
+            <p class="text-xs text-[#71717a] mt-1" data-i18n="exportSubtitle">Sincroniza con la aplicación móvil.</p>
+          </div>
+          <div class="flex flex-col gap-4">
+            <button type="button" id="exportCsvBtn" class="w-full py-3 px-4 bg-[#18181b] text-white font-mono text-xs uppercase tracking-wider font-medium hover:bg-[#27272a] transition-colors shadow-sm" data-i18n="downloadCsvShort">
+              DESCARGAR CSV
+            </button>
+            <div class="flex items-center justify-between font-mono text-xs text-[#71717a] pt-2 border-t border-[#e4e4e7]">
+              <span data-i18n="otherFormats">Otros formatos:</span>
+              <div class="flex items-center gap-4">
+                <button type="button" id="exportPdfBtn" class="hover:text-[#18181b] transition-colors">PDF</button>
+                <button type="button" id="exportJsonBtn" class="hover:text-[#18181b] transition-colors">JSON</button>
+                <button type="button" id="exportMdBtn" class="hover:text-[#18181b] transition-colors">MD</button>
+                <button type="button" id="copyCsvBtn" class="hover:text-[#18181b] transition-colors" data-i18n="copyShort">COPIAR</button>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-[#e4e4e7] flex flex-col gap-2">
+            <span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" data-i18n="importProcedure">Procedimiento de importación</span>
+            <ol class="font-mono text-xs text-[#71717a] flex flex-col gap-1.5 pl-4 list-decimal marker:text-[#a1a1aa]">
+              <li data-i18n="importStep1"></li>
+              <li data-i18n="importStep2"></li>
+              <li data-i18n="importStep3"></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="w-full border-t border-[#e4e4e7] py-8 text-[#71717a] font-mono text-[11px] bg-[#fafaf9]">
+    <div class="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span data-i18n="footerLocal">FITNESS TRACKER · SISTEMA LOCAL</span>
+      <span data-i18n="footerTagline2">DISCIPLINA / FORMA / VOLUMEN</span>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 sm:px-10 mt-4 text-[10px] text-[#a1a1aa]">
+      <span data-i18n="credit">Ejercicios</span>:
+      <a href="https://github.com/hasaneyldrm/exercises-dataset" target="_blank" rel="noreferrer" class="underline underline-offset-2 hover:text-[#71717a]">hasaneyldrm/exercises-dataset</a>
+      · MIT
+    </div>
+  </footer>
+
+  <!-- ===== Diálogo de ejercicio ===== -->
+  <dialog id="exerciseDialog" class="sheet" aria-labelledby="exerciseDialogTitle">
+    <div class="w-full max-w-lg bg-white border border-[#e4e4e7] text-[#18181b] p-8 flex flex-col gap-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-baseline justify-between border-b border-[#e4e4e7] pb-3">
+        <h3 id="exerciseDialogTitle" class="font-sans text-lg font-medium" data-i18n="exerciseParams">Parámetros del Ejercicio</h3>
+        <button type="button" id="exCloseBtn" class="text-[#71717a] hover:text-[#18181b] transition-colors" data-i18n-title="close" aria-label="Cerrar">
+          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-col gap-1.5">
+          <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exName" data-i18n="exerciseName">Nombre del ejercicio</label>
+          <input id="exName" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] text-sm py-1.5 px-0 placeholder-[#a1a1aa] focus:outline-none transition-colors w-full rounded-none" type="text" autocomplete="off" data-i18n-ph="exerciseNamePh">
+          <datalist id="exerciseNames"></datalist>
+          <div id="exSuggestions" class="flex flex-wrap items-center gap-1 min-h-[22px]"></div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" id="exGroupLabel" data-i18n="muscleGroup">GRUPO MUSCULAR</span>
+          <div id="exGroupChips" class="flex flex-wrap gap-2 font-mono text-xs" role="group" aria-labelledby="exGroupLabel"></div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+          <div class="flex flex-col gap-1">
+            <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exSets" data-i18n="sets">Series</label>
+            <input id="exSets" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-sm py-1 text-center focus:outline-none rounded-none" type="number" min="0" max="99" inputmode="numeric">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exReps" data-i18n="reps">Reps</label>
+            <input id="exReps" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-sm py-1 text-center focus:outline-none rounded-none" type="number" min="0" max="999" inputmode="numeric">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exRest" data-i18n="restShort">Pausa (s)</label>
+            <input id="exRest" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-sm py-1 text-center focus:outline-none rounded-none" type="number" min="0" max="3600" inputmode="numeric" data-i18n-ph="restPhShort" data-i18n-title="restPh">
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" id="exIntensityLabel" data-i18n="intensityShort">RPE/RIR</span>
+            <div id="exIntensityChips" class="flex flex-wrap gap-1" role="group" aria-labelledby="exIntensityLabel"></div>
+          </div>
+        </div>
+
+        <div id="exIntensityWrap" class="hidden flex flex-col gap-1.5">
+          <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exIntensityValue" data-i18n="intensityValue">Valor</label>
+          <input id="exIntensityValue" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-sm py-1.5 text-center focus:outline-none rounded-none" type="number" step="0.5" min="0" max="100" inputmode="decimal">
+        </div>
+
+        <div class="flex items-center gap-6 pt-2 font-mono text-xs text-[#71717a]" role="group" aria-label="Opciones del ejercicio">
+          <label class="flex items-center gap-2 cursor-pointer hover:text-[#18181b]">
+            <input type="checkbox" id="exWarmup" class="rounded-none bg-transparent border-[#e4e4e7] text-[#18181b] focus:ring-0">
+            <span data-i18n="warmup">Calentamiento</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer hover:text-[#18181b]">
+            <input type="checkbox" id="exUnilateral" class="rounded-none bg-transparent border-[#e4e4e7] text-[#18181b] focus:ring-0">
+            <span data-i18n="unilateral">Unilateral</span>
+            <span class="text-[#a1a1aa]">(1L)</span>
+          </label>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exNotes" data-i18n="notes">Notas</label>
+          <input id="exNotes" class="bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] text-sm py-1.5 px-0 placeholder-[#a1a1aa] focus:outline-none transition-colors w-full rounded-none" type="text" maxlength="200" data-i18n-ph="notesPh">
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]" for="exSupersetGroup" data-i18n="superset">SUPERSET</label>
+          <div class="font-mono text-[10px] text-[#71717a]" id="exSupersetHint" data-i18n="supersetHint"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-[10px] text-[#a1a1aa] uppercase whitespace-nowrap" data-i18n="supersetId">SS ID:</span>
+              <input id="exSupersetGroup" class="w-full bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-sm py-1 px-0 focus:outline-none rounded-none" type="text" maxlength="40" data-i18n-ph="supersetGroup" aria-describedby="exSupersetHint">
+            </div>
+            <input id="exSupersetOrder" class="w-full bg-transparent border-b border-[#e4e4e7] focus:border-[#18181b] text-[#18181b] font-mono text-sm py-1 px-0 focus:outline-none rounded-none" type="number" min="0" max="99" inputmode="numeric" data-i18n-ph="supersetOrder" aria-label="Orden del superset">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-4 pt-4 border-t border-[#e4e4e7]">
+        <button type="button" id="exCancelBtn" class="font-mono text-xs text-[#71717a] hover:text-[#18181b] transition-colors" data-i18n="cancel">CANCELAR</button>
+        <button type="button" id="exSaveBtn" class="px-5 py-2 bg-[#18181b] text-white font-mono text-xs uppercase font-medium hover:bg-[#27272a] transition-colors shadow-sm" data-i18n="save">GUARDAR</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== Diálogo de confirmación ===== -->
+  <dialog id="confirmDialog" class="sheet" aria-labelledby="confirmTitle" aria-describedby="confirmMsg">
+    <div class="w-full max-w-sm bg-white border border-[#e4e4e7] text-[#18181b] p-6 flex flex-col gap-4 shadow-2xl">
+      <h3 id="confirmTitle" class="font-sans text-base text-[#18181b] font-medium"></h3>
+      <p id="confirmMsg" class="text-xs text-[#71717a]"></p>
+      <div class="flex items-center justify-end gap-4 pt-2">
+        <button type="button" id="confirmCancelBtn" class="font-mono text-xs text-[#71717a] hover:text-[#18181b] transition-colors" data-i18n="cancel">CANCELAR</button>
+        <button type="button" id="confirmOkBtn" class="font-mono text-xs text-red-600 hover:text-red-700 transition-colors font-medium" data-i18n="ok">OK</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toasts" class="fixed bottom-8 right-8 z-50 flex flex-col gap-2 pointer-events-none w-[min(420px,calc(100vw-2rem))]" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
