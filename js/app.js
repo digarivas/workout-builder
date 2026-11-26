@@ -263,7 +263,12 @@
       const exercises = day.exercises || [];
       const exCount = exercises.length;
       const setCount = exercises.reduce(function (acc, ex) { return acc + (Number(ex.sets) || 0); }, 0);
-      const stats = exCount === 1 ? t("dayStatsOne", setCount) : t("dayStats", exCount, setCount);
+      let stats;
+      if (exCount === 1) {
+        stats = setCount === 1 ? t("dayStatsOneSet") : t("dayStatsOne", setCount);
+      } else {
+        stats = setCount === 1 ? t("dayStatsSingleSet", exCount) : t("dayStats", exCount, setCount);
+      }
 
       const rows = exercises.map(function (ex, exIndex) {
         const rest = ex.restTimeSeconds !== null && ex.restTimeSeconds !== undefined ? ex.restTimeSeconds + "s" : "";
@@ -321,7 +326,7 @@
       }).join("");
 
       const emptyRow = exCount === 0
-        ? '<div class="py-6 px-4 text-center font-mono text-xs text-[#71717a]">' + esc(t("noExercises")) + "</div>"
+        ? '<button type="button" class="w-full py-6 px-4 text-center font-mono text-xs text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] transition-colors cursor-pointer" data-action="addEx" data-day="' + esc(day.dayId) + '">' + esc(t("noExercises")) + "</button>"
         : "";
 
       return '<div class="flex flex-col gap-6">' +
@@ -346,7 +351,7 @@
     const canAddDay = r.scheduleType === "daily_variation" && r.days.length < M.DAY_CODES.length;
     if (addDay) addDay.classList.toggle("hidden", !canAddDay);
     const dayCount = $("#dayCount");
-    if (dayCount) dayCount.textContent = t("dayCountLabel", r.days.length);
+    if (dayCount) dayCount.textContent = r.days.length === 1 ? t("dayCountLabelOne") : t("dayCountLabel", r.days.length);
 
     renderWeekly();
   }
@@ -414,7 +419,7 @@
     const totalEl = $("#weeklyTotal");
     if (totalEl) {
       totalEl.innerHTML = data.total > 0
-        ? '<span class="text-[#18181b] font-medium">' + data.total + '</span> <span class="text-[#71717a] font-normal">' + esc(t("totalSeriesSuffix")) + "</span>"
+        ? '<span class="text-[#18181b] font-medium">' + data.total + '</span> <span class="text-[#71717a] font-normal">' + esc(data.total === 1 ? t("totalSeriesSuffixOne") : t("totalSeriesSuffix")) + "</span>"
         : "";
     }
     const panel = $("#weeklyPanel");
@@ -451,7 +456,7 @@
       const opacity = Math.max(0.35, Math.min(1, g.total / maxGroupTotal)).toFixed(2);
       return '<div class="py-1.5 flex items-center justify-between">' +
         '<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#18181b]" style="opacity:' + opacity + '"></span><span class="text-[#18181b] font-medium">' + esc(g.group) + "</span></div>" +
-        '<div class="flex items-center gap-3"><span class="text-[11px] text-[#71717a]">' + pct + '%</span><span class="text-[#18181b] font-medium w-16 text-right">' + esc(t("seriesCount", g.total)) + "</span></div>" +
+        '<div class="flex items-center gap-3"><span class="text-[11px] text-[#71717a]">' + pct + '%</span><span class="text-[#18181b] font-medium w-16 text-right">' + esc(g.total === 1 ? t("seriesCountOne") : t("seriesCount", g.total)) + "</span></div>" +
         "</div>";
     }).join("");
 
@@ -459,7 +464,7 @@
       '<div class="md:col-span-7 flex flex-col items-center justify-center">' +
       '<div class="w-full flex items-center justify-between pb-3 border-b border-[#e4e4e7] mb-2">' +
       '<span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]">' + esc(t("radarTitle")) + "</span>" +
-      '<span class="font-mono text-[11px] text-[#18181b] font-medium">' + esc(t("radarVertices", radarGroups.length)) + "</span>" +
+      '<span class="font-mono text-[11px] text-[#18181b] font-medium">' + esc(radarGroups.length === 1 ? t("radarVerticesOne") : t("radarVertices", radarGroups.length)) + "</span>" +
       "</div>" +
       '<div class="relative w-full max-w-[340px] aspect-square flex items-center justify-center">' + radar + "</div>" +
       '<div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 font-mono text-[11px] text-[#71717a]">' +
@@ -475,8 +480,8 @@
       '<div class="bg-[#a1a1aa] h-full" style="width:' + legsPct + '%"></div>' +
       (other > 0 ? '<div class="bg-[#d4d4d8] h-full" style="width:' + otherPct + '%"></div>' : "") +
       "</div>" +
-      '<div class="flex items-center justify-between font-mono text-[10px] text-[#71717a]"><span>' + esc(t("torsoSeries", torso)) + "</span><span>" + esc(t("legsSeries", legs)) + "</span></div>" +
-      (other > 0 ? '<div class="font-mono text-[10px] text-[#a1a1aa]">' + esc(t("otherSeries", other)) + "</div>" : "") +
+      '<div class="flex items-center justify-between font-mono text-[10px] text-[#71717a]"><span>' + esc(torso === 1 ? t("torsoSeriesOne") : t("torsoSeries", torso)) + "</span><span>" + esc(legs === 1 ? t("legsSeriesOne") : t("legsSeries", legs)) + "</span></div>" +
+      (other > 0 ? '<div class="font-mono text-[10px] text-[#a1a1aa]">' + esc(other === 1 ? t("otherSeriesOne") : t("otherSeries", other)) + "</div>" : "") +
       "</div>" +
       '<div class="flex flex-col gap-2.5">' +
       '<span class="font-mono text-[10px] uppercase tracking-widest text-[#71717a]">' + esc(t("breakdownTitle")) + "</span>" +
