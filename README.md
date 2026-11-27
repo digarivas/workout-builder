@@ -1,11 +1,11 @@
-# Routine Forge
+# Workout Builder
 
 Creador de rutinas de entrenamiento para la app **Fitness Tracker**. Aplicación
 web sencilla para preparar rutinas desde el navegador: puedes crearlas desde cero
 o importarlas desde un PDF, una imagen o texto pegado, y exportarlas en varios
 formatos.
 
-![Captura de Routine Forge](docs/routine-forge.png)
+![Captura de Workout Builder](docs/workout-builder.png)
 
 ## Qué puedes hacer
 
@@ -35,9 +35,9 @@ python -m http.server 8000
 
 Y abre <http://localhost:8000>.
 
-Para publicarla con GitHub Pages, haz público el repositorio (o usa un plan que
-permita Pages en repositorios privados) y ve a **Settings → Pages → Deploy from a
-branch → `main` / `/ (root)`**.
+La web está publicada con GitHub Pages en
+<https://digarivas.github.io/workout-builder/>. Cada push a `main` reconstruye el
+sitio automáticamente.
 
 ### Importar el CSV en Fitness Tracker
 

@@ -1,11 +1,11 @@
-/* Fitness Tracker - Creador de rutinas web
+/* Workout Builder - Creador de rutinas web
    Textos ES/EN (los grupos musculares se mantienen en español, igual que en la app) */
 (function (global) {
   "use strict";
 
   const I18N = {
     es: {
-      brand: "FITNESS TRACKER",
+      brand: "Workout Builder",
       pageTitle: "CREAR RUTINA",
       pageSubtitle: "Diseña tu rutina aquí y llévala a la app",
       routinePageTitle: "RUTINA DE ENTRENAMIENTO",
@@ -59,7 +59,7 @@
       importStep1: "Descarga el archivo CSV con el botón superior.",
       importStep2: "En la app Fitness Tracker, pulsa el icono de importar en la pestaña Rutinas.",
       importStep3: "Confirma las asignaciones musculares automáticas.",
-      footerLocal: "FITNESS TRACKER · SISTEMA LOCAL",
+      footerLocal: "WORKOUT BUILDER · SISTEMA LOCAL",
       footerTagline2: "DISCIPLINA / FORMA / VOLUMEN",
       exerciseParams: "Parámetros del Ejercicio",
       save: "GUARDAR",
@@ -214,7 +214,7 @@
       confirmReplaceRoutine: "La rutina actual ya tiene ejercicios. ¿Reemplazarla por lo detectado?",
       replaceBtn: "Reemplazar",
       exportNoName: "Pon un nombre a la rutina antes de exportar",
-      generatedBy: "Creado con Fitness Tracker (web)",
+      generatedBy: "Creado con Workout Builder (web)",
       toastSaved: "Guardado",
       toastImportedCsv: "Rutina CSV cargada",
       toastImportedJson: "Rutina cargada desde JSON",
@@ -231,12 +231,12 @@
       dayPrefix: "Día",
       footer: "Hecho para Fitness Tracker · Los datos no salen de tu navegador",
       credit: "Ejercicios",
-      footerVersion: "FITNESS TRACKER — CREADOR DE RUTINAS",
+      footerVersion: "WORKOUT BUILDER — CREADOR DE RUTINAS",
       footerTagline: "DISCIPLINA • RENDIMIENTO • CONTROL",
     },
     en: {
-      brand: "FITNESS TRACKER",
-      pageTitle: "ROUTINE BUILDER",
+      brand: "Workout Builder",
+      pageTitle: "CREATE ROUTINE",
       pageSubtitle: "Design your routine here and bring it to the app",
       routinePageTitle: "TRAINING ROUTINE",
       localSave: "LOCAL SAVE",
@@ -289,7 +289,7 @@
       importStep1: "Download the CSV file with the button above.",
       importStep2: "In the Fitness Tracker app, tap the import icon on the Routines tab.",
       importStep3: "Confirm the automatic muscle assignments.",
-      footerLocal: "FITNESS TRACKER · LOCAL SYSTEM",
+      footerLocal: "WORKOUT BUILDER · LOCAL SYSTEM",
       footerTagline2: "DISCIPLINE / FORM / VOLUME",
       exerciseParams: "Exercise Parameters",
       save: "SAVE",
@@ -435,7 +435,7 @@
       confirmReplaceRoutine: "The current routine already has exercises. Replace it with the detected ones?",
       replaceBtn: "Replace",
       exportNoName: "Give the routine a name before exporting",
-      generatedBy: "Created with Fitness Tracker (web)",
+      generatedBy: "Created with Workout Builder (web)",
       toastSaved: "Saved",
       toastImportedCsv: "CSV routine loaded",
       toastImportedJson: "Routine loaded from JSON",
@@ -451,7 +451,7 @@
       dayPrefix: "Day",
       footer: "Made for Fitness Tracker · Your data never leaves your browser",
       credit: "Exercises",
-      footerVersion: "FITNESS TRACKER — ROUTINE BUILDER",
+      footerVersion: "WORKOUT BUILDER — ROUTINE BUILDER",
       footerTagline: "DISCIPLINE • PERFORMANCE • CONTROL",
     },
   };

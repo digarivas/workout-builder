@@ -1,4 +1,4 @@
-/* Fitness Tracker - Creador de rutinas web
+/* Workout Builder - Creador de rutinas web
    Parser heuristico: convierte texto (PDF, OCR o pegado) en una rutina.
    Soporta texto plano, tablas Markdown (cabeceras #, negritas, filas |...|)
    y PDFs con glifos rotos (donde "4 x 8-12" llega como "4 \u0000 8\u0000 12").

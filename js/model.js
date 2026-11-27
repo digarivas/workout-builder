@@ -1,4 +1,4 @@
-/* Fitness Tracker - Creador de rutinas web
+/* Workout Builder - Creador de rutinas web
    Modelo de rutina + formatos: CSV compatible con la app, JSON y Markdown.
    El CSV replica exactamente CsvExporterImporter.kt (formato de exportacion). */
 (function (global) {

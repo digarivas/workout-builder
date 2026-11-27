@@ -1,4 +1,4 @@
-/* Fitness Tracker - Creador de rutinas web
+/* Workout Builder - Creador de rutinas web
    UI, persistencia (localStorage), importacion (PDF/OCR/CSV/JSON) y exportacion. */
 (function () {
   "use strict";
