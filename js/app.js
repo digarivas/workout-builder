@@ -28,7 +28,7 @@
     routines: [],
     activeId: null,
     lang: "es",
-    theme: "dark",
+    theme: "light",
   };
 
   let exerciseData = { presets: [], catalog: [] };
@@ -62,7 +62,6 @@
   }
 
   function saveNow() {
-    const status = $("#autosaveStatus");
     try {
       localStorage.setItem(LS_KEY, JSON.stringify({
         v: 1,
@@ -71,10 +70,7 @@
         theme: state.theme,
         routines: state.routines,
       }));
-      if (status) status.textContent = t("localSave");
-    } catch (e) {
-      if (status) status.textContent = t("localSaveError");
-    }
+    } catch (e) { /* almacenamiento no disponible */ }
   }
 
   function load() {
@@ -86,7 +82,7 @@
       state.routines = data.routines;
       state.activeId = data.activeId || (state.routines[0] && state.routines[0].id);
       state.lang = data.lang === "en" ? "en" : "es";
-      state.theme = "light";
+      state.theme = data.theme === "dark" ? "dark" : "light";
       return state.routines.length > 0;
     } catch (e) {
       return false;
@@ -110,12 +106,31 @@
     $("#langEn").classList.toggle("active", state.lang === "en");
     $("#langEs").setAttribute("aria-pressed", state.lang === "es");
     $("#langEn").setAttribute("aria-pressed", state.lang === "en");
+    updateThemeToggle();
   }
 
   function applyTheme() {
-    state.theme = "light";
-    document.documentElement.setAttribute("data-theme", "light");
-    document.documentElement.classList.remove("dark");
+    const dark = state.theme === "dark";
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", dark ? "#0f0f11" : "#fafaf9");
+    updateThemeToggle();
+  }
+
+  function updateThemeToggle() {
+    const btn = $("#themeToggle");
+    if (!btn) return;
+    const dark = state.theme === "dark";
+    const icon = $("#themeIcon");
+    const label = $("#themeLabel");
+    if (icon) icon.textContent = dark ? "light_mode" : "dark_mode";
+    if (label) label.textContent = t(dark ? "themeLight" : "themeDark");
+    const title = t(dark ? "themeSwitchToLight" : "themeSwitchToDark");
+    btn.setAttribute("title", title);
+    btn.setAttribute("aria-label", title);
+    btn.setAttribute("aria-pressed", dark ? "true" : "false");
   }
 
   function setLanguage(lang) {
@@ -1261,6 +1276,11 @@
     });
     $("#langEn").addEventListener("click", function () {
       setLanguage("en");
+    });
+    $("#themeToggle").addEventListener("click", function () {
+      state.theme = state.theme === "dark" ? "light" : "dark";
+      applyTheme();
+      saveNow();
     });
     // Biblioteca
     $("#routineSelect").addEventListener("change", function (e) {

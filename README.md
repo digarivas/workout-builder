@@ -17,6 +17,7 @@ formatos.
 - Exportar a **CSV** compatible con la app Fitness Tracker, **PDF**, **JSON** y
   **Markdown**.
 - Ver el **volumen semanal** por grupo muscular y el equilibrio torso/pierna.
+- Cambiar entre **tema claro y oscuro** desde la cabecera.
 - Trabajar sin cuenta, sin registro y sin subir datos a ningún servidor.
 
 ## Cómo usarlo
