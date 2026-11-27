@@ -37,7 +37,7 @@ python -m http.server 8000
 Y abre <http://localhost:8000>.
 
 La web está publicada con GitHub Pages en
-<https://digarivas.github.io/workout-builder/>. Cada push a `main` reconstruye el
+<https://digarivas.github.io/WorkoutBuilder/>. Cada push a `main` reconstruye el
 sitio automáticamente.
 
 ### Importar el CSV en Fitness Tracker
